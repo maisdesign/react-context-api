@@ -5,7 +5,9 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import { ITEMS_PER_PAGE } from "../data/config.js"
 import GridView from "../components/products/GridView.jsx"
 import ListView from "../components/products/ListView.jsx"
+import { useBudget } from "../contexts/BudgetContext";
 const sortLabels = { featured: "Featured", az: "A-Z", za: "Z-A", "price-asc": "Price ↑", "price-desc": "Price ↓", "rating-asc": "Rating ↑", "rating-desc": "Rating ↓" }
+
 
 function Products({ origin, basePath, title = "The Collection" }) {
     const { page } = useParams()
@@ -16,17 +18,17 @@ function Products({ origin, basePath, title = "The Collection" }) {
     const [view, setView] = useState('grid')
     const [sortOption, setSortOption] = useState('featured')
     const navigate = useNavigate()
-
-
+    const { budgetMode } = useBudget()
+    const lowBudget = (budgetMode) ? (items.filter((item) => item.price <= 30)) : (items)
     let sortedItems;
     switch (sortOption) {
-        case "az": sortedItems = items.toSorted((a, b) => a.title.localeCompare(b.title)); break;
-        case "za": sortedItems = items.toSorted((a, b) => b.title.localeCompare(a.title)); break;
-        case "price-asc": sortedItems = items.toSorted((a, b) => a.price - b.price); break;
-        case "price-desc": sortedItems = items.toSorted((a, b) => b.price - a.price); break;
-        case "rating-asc": sortedItems = items.toSorted((a, b) => a.rating.rate - b.rating.rate); break;
-        case "rating-desc": sortedItems = items.toSorted((a, b) => b.rating.rate - a.rating.rate); break;
-        default: sortedItems = items;
+        case "az": sortedItems = lowBudget.toSorted((a, b) => a.title.localeCompare(b.title)); break;
+        case "za": sortedItems = lowBudget.toSorted((a, b) => b.title.localeCompare(a.title)); break;
+        case "price-asc": sortedItems = lowBudget.toSorted((a, b) => a.price - b.price); break;
+        case "price-desc": sortedItems = lowBudget.toSorted((a, b) => b.price - a.price); break;
+        case "rating-asc": sortedItems = lowBudget.toSorted((a, b) => a.rating.rate - b.rating.rate); break;
+        case "rating-desc": sortedItems = lowBudget.toSorted((a, b) => b.rating.rate - a.rating.rate); break;
+        default: sortedItems = lowBudget;
     }
 
     useEffect(() => {
@@ -41,17 +43,24 @@ function Products({ origin, basePath, title = "The Collection" }) {
 
 
     useEffect(() => {
-        if (items.length === 0) return;
-        const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
+        if (lowBudget.length === 0) return;
+        const totalPages = Math.ceil(lowBudget.length / ITEMS_PER_PAGE);
         if (currentPage > totalPages) navigate(basePath + "/1", { replace: true });
-    }, [items, currentPage, basePath, navigate])
+    }, [lowBudget, currentPage, basePath, navigate])
 
 
-    const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
+    const totalPages = Math.ceil(lowBudget.length / ITEMS_PER_PAGE);
     const pagination = [];
     for (let i = 1; i <= totalPages; i++) {
         pagination.push(i);
     }
+
+    const navigationButtons = (<div className="pagination">{(currentPage > 1) && <Link className="prev-button" to={basePath + "/" + (currentPage - 1)}>Prev</Link>}
+        <div className="pagination-numbers">
+            {pagination.map((pageNum) => <Link key={pageNum} className={(pageNum === currentPage) ? "is-active" : "not-active"} to={basePath + "/" + pageNum}>{pageNum}</Link>)}
+        </div>
+        {(currentPage < totalPages) && <Link className="next-button" to={basePath + "/" + (currentPage + 1)}>Next</Link>}</div>)
+
     return <>
         {loading && <PacmanLoader color="rgba(92, 230, 44, 1)" />}
         {error && <div className="danger">Errore: {error}</div>}
@@ -63,7 +72,7 @@ function Products({ origin, basePath, title = "The Collection" }) {
                     <h1 className="catalog-title">{title}</h1>
                 </div>
                 <div className="catalog-count label">
-                    Displaying <strong>{items.length}</strong> results
+                    Displaying <strong>{lowBudget.length}</strong> results
                 </div>
             </header>
 
@@ -83,13 +92,9 @@ function Products({ origin, basePath, title = "The Collection" }) {
                         <li><button className="dropdown-item" onClick={() => setSortOption("rating-desc")}>Rating Descending</button></li>
                     </ul>
                 </div>
-                <div className="pagination pagination-top">
-                    {(currentPage > 1) && <Link className="prev-button" to={basePath + "/" + (currentPage - 1)}>Prev</Link>}
-                    <div className="pagination-numbers">
-                        {pagination.map((pageNum) => <Link key={pageNum} className={(pageNum === currentPage) ? "is-active" : "not-active"} to={basePath + "/" + pageNum}>{pageNum}</Link>)}
-                    </div>
-                    {(currentPage < totalPages) && <Link className="next-button" to={basePath + "/" + (currentPage + 1)}>Next</Link>}
-                </div>
+
+                {navigationButtons}
+
                 <div className="utility-view-toggle">
                     <button className={"utility-view-btn" + (view === "grid" ? " is-active" : "")} onClick={() => setView("grid")}>
                         <span className="material-symbols-outlined" title="grid view">grid_view</span>
@@ -107,13 +112,9 @@ function Products({ origin, basePath, title = "The Collection" }) {
                     )
                 }
             </div>
-            <div className="pagination pagination-bottom">
-                {(currentPage > 1) && <Link className="prev-button" to={basePath + "/" + (currentPage - 1)}>Prev</Link>}
-                <div className="pagination-numbers">
-                    {pagination.map((pageNum) => <Link key={pageNum} className={(pageNum === currentPage) ? "is-active" : "not-active"} to={basePath + "/" + pageNum}>{pageNum}</Link>)}
-                </div>
-                {(currentPage < totalPages) && <Link className="next-button" to={basePath + "/" + (currentPage + 1)}>Next</Link>}
-            </div>
+
+            {navigationButtons}
+
         </div>
     </>
 }
