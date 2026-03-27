@@ -33,7 +33,7 @@ function NavBar({ location }) {
                                     ))}
                                 </ul>
                             </li>
-                            <li className="site-nav-link">
+                            <li>
                                 <button className={(budgetMode) ? "site-nav-link is-active" : "site-nav-link"} onClick={() => setBudgetMode(!budgetMode)}>
                                     {(!budgetMode) ? `Activate budget mode` : `Disable budget mode`}
                                 </button>
