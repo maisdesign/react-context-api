@@ -10,25 +10,28 @@ import NotFound from "./pages/NotFound.jsx"
 import { productsApi } from "./data/apiEndPoints.js"
 
 import { CategoriesProvider } from "./contexts/CategoriesContext";
+import { BudgetProvider } from "./contexts/BudgetContext";
 
 export default function App() {
   return (
     <BrowserRouter>
-      <CategoriesProvider>
-        <Routes>
-          <Route element={<HomeLayout />}>
-            <Route path="/" element={<HomePage />} />
-          </Route>
-          <Route element={<DefaultLayout />}>
-            <Route path="/products/:page" element={<Products origin={productsApi} basePath="/products" />} />
-            <Route path="/about-us" element={<AboutUs />} />
-            <Route path="/category/:categoryName" element={<CategoryPage />} />
-            <Route path="/category/:categoryName/:page" element={<CategoryPage />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
-            <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
-      </CategoriesProvider>
+      <BudgetProvider>
+        <CategoriesProvider>
+          <Routes>
+            <Route element={<HomeLayout />}>
+              <Route path="/" element={<HomePage />} />
+            </Route>
+            <Route element={<DefaultLayout />}>
+              <Route path="/products/:page" element={<Products origin={productsApi} basePath="/products" />} />
+              <Route path="/about-us" element={<AboutUs />} />
+              <Route path="/category/:categoryName" element={<CategoryPage />} />
+              <Route path="/category/:categoryName/:page" element={<CategoryPage />} />
+              <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Routes>
+        </CategoriesProvider>
+      </BudgetProvider>
     </BrowserRouter>
   );
 }
