@@ -1,10 +1,13 @@
 import { NavLink, Link } from "react-router-dom";
 import { websiteName } from "../../data/config.js"
 import { useCategories } from "../../contexts/CategoriesContext";
+import { useBudget } from "../../contexts/BudgetContext";
 
 function NavBar({ location }) {
     const { apiCategory } = useCategories();
+    const { budgetMode, setBudgetMode } = useBudget();
     return (
+
         <nav className="site-nav navbar navbar-expand-lg">
             <div className="site-nav-inner">
                 <div className="site-nav-left">
@@ -29,6 +32,11 @@ function NavBar({ location }) {
                                         </li>
                                     ))}
                                 </ul>
+                            </li>
+                            <li className="site-nav-link">
+                                <button className={(budgetMode) ? "site-nav-link is-active" : "site-nav-link"} onClick={() => setBudgetMode(!budgetMode)}>
+                                    {(!budgetMode) ? `Attiva modalità budget` : `Disattiva modalità budget`}
+                                </button>
                             </li>
                         </ul>
                     </div>
