@@ -1,11 +1,25 @@
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useMatch } from "react-router-dom";
 import { websiteName } from "../../data/config.js"
 import { useCategories } from "../../contexts/CategoriesContext";
 import { useBudget } from "../../contexts/BudgetContext";
 
 function NavBar({ location }) {
     const { apiCategory } = useCategories();
-    const { budgetMode, setBudgetMode } = useBudget();
+    const { setMaxPrice } = useBudget();
+    const match1 = useMatch("/products/:page");
+    const match2 = useMatch("/category/:categoryName");
+    const match3 = useMatch("/category/:categoryName/:page");
+
+    function setterMaxPrice(value) {
+        if (isNaN(parseInt(value))) {
+            setMaxPrice(null)
+        } else {
+            setMaxPrice(parseInt(value))
+        }
+    }
+
+    const showMaxPrice = match1 || match2 || match3
+
     return (
 
         <nav className="site-nav navbar navbar-expand-lg">
@@ -33,11 +47,14 @@ function NavBar({ location }) {
                                     ))}
                                 </ul>
                             </li>
-                            <li>
-                                <button className={(budgetMode) ? "site-nav-link is-active" : "site-nav-link"} onClick={() => setBudgetMode(!budgetMode)}>
-                                    {(!budgetMode) ? `Activate budget mode` : `Disable budget mode`}
-                                </button>
-                            </li>
+                            {showMaxPrice &&
+                                <li>
+                                    <label htmlFor="maxPrice" className="site-nav-link">Max Price
+                                        <input type="number" min="0" id="maxPrice" onChange={(e) => (setterMaxPrice(e.target.value))}>
+                                        </input>
+                                    </label>
+                                </li>
+                            }
                         </ul>
                     </div>
                 </div>
@@ -53,7 +70,7 @@ function NavBar({ location }) {
                 </div>
                 <div className="site-nav-border"></div>
             </div>
-        </nav>
+        </nav >
     )
 }
 

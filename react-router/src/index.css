@@ -185,6 +185,18 @@ button.site-nav-link.is-active {
   padding: 0;
 }
 
+label.site-nav-link input[type="number"] {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid currentColor;
+  outline: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  width: 4rem;
+  margin-left: 0.5rem;
+}
+
 .site-nav-link:hover {
   opacity: 1;
   color: var(--on-background);

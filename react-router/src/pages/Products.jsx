@@ -18,8 +18,8 @@ function Products({ origin, basePath, title = "The Collection" }) {
     const [view, setView] = useState('grid')
     const [sortOption, setSortOption] = useState('featured')
     const navigate = useNavigate()
-    const { budgetMode } = useBudget()
-    const lowBudget = (budgetMode) ? (items.filter((item) => item.price <= 30)) : (items)
+    const { maxPrice } = useBudget()
+    const lowBudget = (maxPrice != null) ? (items.filter((item) => item.price <= maxPrice)) : (items)
     let sortedItems;
     switch (sortOption) {
         case "az": sortedItems = lowBudget.toSorted((a, b) => a.title.localeCompare(b.title)); break;
