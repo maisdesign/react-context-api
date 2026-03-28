@@ -126,34 +126,31 @@ Dopo l'implementazione è stato condotto un audit sistematico confrontando il CS
 
 ### Obiettivi
 
-Estendiamo il mini e-commerce introducendo le **Context API** di React per gestire una modalità budget globale.
+Estendiamo il mini e-commerce introducendo le **Context API** di React per gestire un filtro prezzo globale.
 
 #### Milestone 1 — BudgetContext
 
-- Creare un nuovo context `BudgetContext`
-- Il context espone uno stato `budgetMode` (booleano) e la funzione `setBudgetMode` per modificarlo
-- Wrappare l'intera applicazione con il `BudgetProvider`
+- ✅ Creato `BudgetContext` tramite `createContext()`
+- ✅ `BudgetProvider` gestisce lo stato `maxPrice` (numero, valore iniziale `null`) e lo espone via prop `value`
+- ✅ Custom hook `useBudget()` che incapsula `useContext(BudgetContext)` per semplificare il consumo
+- ✅ `BudgetProvider` wrappa l'intera applicazione in `App.jsx`
 
-#### Milestone 2 — Navbar con toggle
+#### Milestone 2 — Navbar con input filtro
 
-- Aggiungere un bottone **"Modalità Budget"** nella Navbar
-- Al click, attiva/disattiva `budgetMode`
-- L'etichetta cambia dinamicamente: `Attiva Modalità Budget` / `Disattiva Modalità Budget`
+- ✅ `<input type="number">` nella Navbar legato a `maxPrice` tramite `useBudget()`
+- ✅ Visualizzazione **condizionale**: l'input appare solo sulle route `/products/:page` e `/category/:categoryName` tramite `useMatch()`
+- ✅ Handler `setterMaxPrice` gestisce la conversione stringa→numero (`parseInt`) e il caso campo vuoto (→ `null`)
 
 #### Milestone 3 — Filtro prodotti
 
-- Nella pagina prodotti, leggere `budgetMode` tramite il context
-- Se `budgetMode === true`, mostrare solo i prodotti con `price <= 30`
-- Altrimenti, mostrare tutti i prodotti normalmente
+- ✅ `Products.jsx` legge `maxPrice` tramite `useBudget()`
+- ✅ Se `maxPrice !== null`, filtra i prodotti con `price <= maxPrice`
+- ✅ Paginazione e contatore risultati aggiornati dinamicamente in base al filtro
 
 ### Bonus
 
-Trasformare `budgetMode` da booleano a filtro numerico:
-
-- Sostituire `budgetMode` con `maxPrice` (numero, valore iniziale `null`)
-- Nella Navbar, sostituire il bottone con un `<input type="number">` legato a `maxPrice`
-- Nella pagina prodotti, mostrare solo i prodotti con `price <= maxPrice`
-- Se `maxPrice` è `null` (o non impostato), mostrare tutti i prodotti
+- ✅ Implementato direttamente con `maxPrice` numerico (senza passare per il booleano `budgetMode`)
+- ✅ Input stilizzato per integrarsi con il design della Navbar (bordo solo inferiore, sfondo trasparente)
 
 ---
 
